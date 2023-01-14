@@ -69,7 +69,7 @@ pipeline {
                 beforeAgent true
             }
             steps {
-                dir('todos-api'){
+                dir('mern-api'){
                     sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID .'
                     sh 'docker push $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID'
                     sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID'
