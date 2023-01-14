@@ -14,20 +14,20 @@ pipeline {
         stage('Init'){
             agent any
             steps{
-            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' //put your credentials here 
             }
         }
-        stage('Build auth-api') {
+        stage('Build backend') {
             agent any
             when {
-                changeset "**/auth-api/*.*"
+                changeset "**/*.**"
                 beforeAgent true
             }
             steps {
-                dir('auth-api'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/auth-api:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/auth-api:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/auth-api:$BUILD_ID'
+                dir('backend'){
+                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID .'
+                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID'
+                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID'
                     sh 'docker logout'
                 }
             }
@@ -35,11 +35,11 @@ pipeline {
         stage('Build frontend') {
             agent any
             when {
-                changeset "**/frontend/*.*"
+                changeset "**/client/*.*"
                 beforeAgent true
             }
             steps {
-                dir('frontend'){
+                dir('client'){
                     sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/frontend:$BUILD_ID .'
                     sh 'docker push $DOCKERHUB_CREDENTIALS_USR/frontend:$BUILD_ID'
                     sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/frontend$BUILD_ID'
@@ -47,51 +47,8 @@ pipeline {
                 }
             }
         }
-        stage('Build log-message-processor') {
-            agent any
-            when {
-                changeset "**/log-message-processor/*.*"
-                beforeAgent true
-            }
-            steps {
-                dir('log-message-processor'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/log-message-processor:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/log-message-processor:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/log-message-processor:$BUILD_ID'
-                    sh 'docker logout'
-                }
-            }
-        }
-        stage('Build todos-api') {
-            agent any
-            when {
-                changeset "**/todos-api/*.*"
-                beforeAgent true
-            }
-            steps {
-                dir('mern-api'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/todos-api:$BUILD_ID'
-                    sh 'docker logout'
-                }
-            }
-        }
-        stage('Build users-api') {
-            agent any
-            when {
-                changeset "**/users-api/*.*"
-                beforeAgent true
-            }
-            steps {
-                dir('users-api'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/frontend:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/users-api:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/users-api:$BUILD_ID'
-                    sh 'docker logout'
-                }
-            }
-        }
+
+    
     }
 }
 
