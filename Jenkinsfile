@@ -4,7 +4,7 @@ pipeline {
         nodejs : "nodejs"
     }
     stages {
-         stage("build npm") {
+        stage("build npm") {
              steps {
                  script { 
                     echo "build the app"
