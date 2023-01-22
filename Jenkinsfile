@@ -4,6 +4,21 @@ pipeline {
         nodejs : "nodejs"
     }
     stages {
+         stage("test") {
+             steps {
+                 script { 
+                    echo "test"
+                  }
+             }
+        }
+        stage("build npm") {
+             steps {
+                 script { 
+                    echo "build the app"
+                    sh 'npm run build'
+                 }
+             }
+        }
         stage("build image") {
              steps {
                  script { 
