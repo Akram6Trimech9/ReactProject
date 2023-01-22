@@ -1,54 +1,34 @@
 pipeline {
-    agent none
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dh_cred')
+    agent any
+    tools{
+        nodejs : "nodejs"
     }
     stages {
-         stage('Checkout'){
-            agent any
-            steps{
-                //Changez avec votre lien gitlab
-                git branch: 'main', url: 'Put your git there '
-            }
+         stage('build npm'){
+             steps{
+                 script { 
+                  echo "build the app"
+                  sh 'npm run build'
+                 }
+             }
         }
-        stage('Init'){
-            agent any
-            steps{
-            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' //put your credentials here 
-            }
+        stage('build image'){
+             steps{
+                 script { 
+                  echo "build the app"
+                  withCredentials([usernamePassword(credentialsId:'Docker-hub-repo',passwordVariable:'PASS',usernameVariable: 'USER')]){
+                    sh 'docker build -t akram6trimech9/demo-app:6.9'
+                    sh "echo $PASS | docker login -u $USER  --password-stdin"
+                    sh 'docker push akram6trimech9/demo-app:6.9'    
+                  }
+                 }
+             }
         }
-        stage('Build backend') {
-            agent any
-            when {
-                changeset "**/*.**"
-                beforeAgent true
-            }
-            steps {
-                dir('backend'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/backend:$BUILD_ID'
-                    sh 'docker logout'
-                }
-            }
+        stage('Deploy'){
+             steps{
+                 echo "deploying the app" 
+                 }
+             }
         }
-        stage('Build frontend') {
-            agent any
-            when {
-                changeset "**/client/*.*"
-                beforeAgent true
-            }
-            steps {
-                dir('client'){
-                    sh 'docker build -t $DOCKERHUB_CREDENTIALS_USR/frontend:$BUILD_ID .'
-                    sh 'docker push $DOCKERHUB_CREDENTIALS_USR/frontend:$BUILD_ID'
-                    sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/frontend$BUILD_ID'
-                    sh 'docker logout'
-                }
-            }
-        }
-
-    
     }
 }
-
