@@ -6,7 +6,7 @@ pipeline {
     stages {
          stage('build npm'){
              steps{
-                 script { 
+                 script{ 
                   echo "build the app"
                   sh 'npm run build'
                  }
@@ -14,7 +14,7 @@ pipeline {
         }
         stage('build image'){
              steps{
-                 script { 
+                 script{ 
                   echo "build the app"
                   withCredentials([usernamePassword(credentialsId:'Docker-hub-repo',passwordVariable:'PASS',usernameVariable: 'USER')]){
                     sh 'docker build -t akram6trimech9/demo-app:6.9'
